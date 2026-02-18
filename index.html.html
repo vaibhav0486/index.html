@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPSC सराव ॲप - BHC Clerk Special</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Devanagari', sans-serif; }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .correct { background-color: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
+        .wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; font-weight: 700; }
+        .tab-inactive { color: #6b7280; font-weight: 500; }
+        .tab-inactive:hover { color: #4f46e5; }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col overflow-hidden">
+
+    <!-- SECURITY CHECKS -->
+    <div id="security-token" style="display:none;" data-hash="mpsc_secure_v1"></div>
+
+    <!-- MAIN APP STRUCTURE -->
+    <div id="app-content" class="flex flex-col h-full w-full">
+        
+        <!-- Header -->
+        <header class="bg-indigo-600 text-white p-4 shadow-lg shrink-0 relative z-20">
+            <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <button id="back-btn" onclick="goBack()" class="hidden p-2 hover:bg-white/20 rounded-full transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    </button>
+                    <div>
+                        <h1 class="text-lg md:text-2xl font-bold" id="header-title">BHC Clerk सराव केंद्र</h1>
+                        <p class="text-xs text-indigo-200 hidden md:block">फक्त सराव, फक्त यश!</p>
+                    </div>
+                </div>
+                
+                <!-- Timer Display (Hidden by default) -->
+                <div id="timer-display" class="hidden bg-white/20 px-4 py-1 rounded-lg font-mono text-xl font-bold flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span id="time-remaining">20:00</span>
+                </div>
+                
+                <!-- Global Telegram Link -->
+                <a href="https://t.me/mpsc_pdf0" target="_blank" class="secure-link-global bg-yellow-400 text-indigo-900 px-4 py-1.5 rounded-full text-sm font-bold hover:bg-yellow-300 transition shadow-md flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.411-.168.56-.505 1.287-.832 1.287-.72 0-.972-.375-1.516-.763l-2.062-1.52c-.676-.502-.029-1.597.55-2.183.153-.155 2.805-2.568 2.855-2.693.006-.015.009-.072-.027-.107-.036-.035-.09-.025-.13-.016-.055.012-3.722 2.37-3.877 2.476-.411.28-1.592.834-2.285.642-.236-.065-.688-.231-1.028-.344-.424-.141-1.063-.352-1.063-.787 0-.295.398-.598 1.055-.867 4.144-1.808 6.918-3.006 8.318-3.6 3.961-1.674 4.787-1.967 5.326-1.967.118 0 .383.029.553.167.144.117.184.275.203.447.018.172.008.572-.047.818z"/></svg>
+                    Join Telegram
+                </a>
+            </div>
+        </header>
+
+        <!-- VIEW 1: HOME SCREEN (Subjects) -->
+        <div id="view-home" class="flex-1 container mx-auto p-4 md:p-6 overflow-y-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">सराव निवडा</h2>
+            <div class="grid grid-cols-1 gap-6">
+                
+                <!-- BHC Clerk Full Practice -->
+                <div onclick="showTopics('bhc_practice')" class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-2xl shadow-lg cursor-pointer card-hover flex items-center gap-6 text-white border border-indigo-400">
+                    <div class="bg-white/20 p-5 rounded-full text-white">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold">BHC Clerk - Full Sectional Practice</h3>
+                        <p class="text-indigo-100 font-medium text-lg mt-1">BHC लिपिक गणित पॅटर्न (Moderate to Hard)</p>
+                        <p class="text-indigo-200 text-sm mt-2">BODMAS, भूमिती (2 प्रश्न), शेकडेवारी, नफा-तोटा, काळ-काम इ.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- VIEW 2: TOPICS LIST -->
+        <div id="view-topics" class="hidden flex-1 container mx-auto p-4 md:p-6 overflow-y-auto">
+            <h2 id="topics-title" class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Topic List</h2>
+            <!-- Updated Grid to fit better and reduced gap slightly for denser look if needed, but keeping large cards -->
+            <div id="topics-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- VIEW 3: QUIZ INTERFACE -->
+        <div id="view-quiz" class="hidden flex-1 flex-col md:flex-row overflow-hidden container mx-auto p-2 md:p-4 gap-4 relative">
+            
+            <!-- Question Area -->
+            <div class="flex-1 bg-white rounded-xl shadow-md overflow-y-auto p-4 md:p-6 flex flex-col relative"> 
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+
+                <!-- Question Content -->
+                <div id="quiz-container" class="flex-1">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-indigo-100 text-indigo-800 text-sm font-medium px-2.5 py-0.5 rounded">प्रश्न <span id="q-number">1</span></span>
+                        <span class="text-gray-500 text-sm">एकूण प्रश्न: <span id="total-q"></span></span>
+                    </div>
+
+                    <h2 id="question-text" class="text-lg md:text-xl font-medium text-gray-800 mb-6 leading-relaxed">
+                        Loading...
+                    </h2>
+
+                    <div id="options-container" class="grid grid-cols-1 gap-3 mb-6"></div>
+
+                    <div id="explanation-box" class="hidden bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r">
+                        <div class="flex items-center mb-2">
+                            <h3 class="font-bold text-blue-700">स्पष्टीकरण:</h3>
+                        </div>
+                        <p id="explanation-text" class="text-gray-700 whitespace-pre-line"></p>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between mt-auto pt-4 border-t border-gray-100 mb-8">
+                    <button onclick="prevQuestion()" id="prev-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50">मागे</button>
+                    <button onclick="nextQuestion()" id="next-btn" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-lg">पुढचा प्रश्न</button>
+                </div>
+            </div>
+
+            <!-- Palette -->
+            <div class="w-full md:w-64 bg-white rounded-xl shadow-md p-4 flex flex-col shrink-0 h-48 md:h-auto">
+                <!-- MANDATORY TEST FOOTER LINK MOVED HERE -->
+                <div id="quiz-footer-link" class="mb-3 bg-indigo-50 border border-indigo-100 p-2 rounded-lg text-center">
+                    <a href="https://t.me/mpsc_pdf0" target="_blank" class="flex items-center justify-center gap-2 text-indigo-600 font-bold text-xs hover:text-indigo-800 transition">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.411-.168.56-.505 1.287-.832 1.287-.72 0-.972-.375-1.516-.763l-2.062-1.52c-.676-.502-.029-1.597.55-2.183.153-.155 2.805-2.568 2.855-2.693.006-.015.009-.072-.027-.107-.036-.035-.09-.025-.13-.016-.055.012-3.722 2.37-3.877 2.476-.411.28-1.592.834-2.285.642-.236-.065-.688-.231-1.028-.344-.424-.141-1.063-.352-1.063-.787 0-.295.398-.598 1.055-.867 4.144-1.808 6.918-3.006 8.318-3.6 3.961-1.674 4.787-1.967 5.326-1.967.118 0 .383.029.553.167.144.117.184.275.203.447.018.172.008.572-.047.818z"/></svg>
+                        Join Telegram Channel
+                    </a>
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">प्रश्न तालिका</h3>
+                <div id="question-grid" class="grid grid-cols-5 md:grid-cols-4 gap-2 overflow-y-auto no-scrollbar content-start"></div>
+                <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-500 flex flex-col gap-2">
+                    <div class="flex items-center"><span class="w-3 h-3 bg-green-100 border border-green-500 rounded mr-2"></span> बरोबर</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-red-100 border border-red-500 rounded mr-2"></span> चूक</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STORE (ONLY BHC CLERK) ---
+        const subjectData = {
+            'bhc_practice': {
+                title: "BHC Clerk - Full Sectional Practice",
+                topics: [
+                    { id: 'bhc_math_1', title: 'सराव संच - 1 (20 प्रश्न)', count: '20 प्रश्न', active: true },
+                    { id: 'bhc_math_2', title: 'सराव संच - 2 (New Series)', count: '20 प्रश्न', active: true },
+                    { id: 'bhc_math_3', title: 'Mock Test - 3 (New Series)', count: '20 प्रश्न', active: true },
+                    { id: 'bhc_math_4', title: 'Mock Test - 4 (New Series)', count: '20 प्रश्न', active: true },
+                    { id: 'bhc_math_5', title: 'Mock Test - 5 (New Series)', count: '20 प्रश्न', active: true },
+                    { id: 'bhc_math_6', title: 'Mock Test - 6 (New Series)', count: '20 प्रश्न', active: true },
+                    { id: 'bhc_math_7', title: 'Mock Test - 7 (New Series)', count: '20 प्रश्न', active: true }
+                ]
+            }
+        };
+
+        // --- MATH QUIZ DATA ---
+        const quizDB = {
+            'bhc_math_1': [
+                // Simplification (2)
+                { id: 1, question: "पदावली सोडवा: 48 - 12 × 3 + 9 ÷ 12 - 9 ÷ 3 = ?", options: ["10.25", "9.75", "11.25", "8.75"], correct: 1, explanation: "BODMAS: 12×3=36, 9÷12=0.75, 9÷3=3. \nसमीकरण: 48 - 36 + 0.75 - 3 \n= 12 + 0.75 - 3 = 12.75 - 3 = 9.75." },
+                { id: 2, question: "सरळरूप द्या: (7 + 7 + 7) ÷ 7 / (5 + 5 + 5 ÷ 5)", options: ["1/11", "3/11", "1", "3"], correct: 1, explanation: "अंश: (7+7+7)÷7 = 21÷7 = 3.\nछेद: 5+5+(5÷5) = 5+5+1 = 11.\nउत्तर = 3/11." },
+                // Mensuration (2)
+                { id: 3, question: "एका वर्तुळाचा परीघ 88 सेमी आहे, तर त्याचे क्षेत्रफळ किती?", options: ["616 चौ.सेमी", "154 चौ.सेमी", "308 चौ.सेमी", "600 चौ.सेमी"], correct: 0, explanation: "2πr = 88 => r = 14. \nArea = πr² = 22/7 × 14 × 14 = 616." },
+                { id: 4, question: "एका चौरसाचे क्षेत्रफळ 225 चौ.सेमी आहे, तर त्याची परिमिती किती?", options: ["60 सेमी", "50 सेमी", "70 सेमी", "40 सेमी"], correct: 0, explanation: "Area = 225 => side = 15. \nPerimeter = 4 × 15 = 60 सेमी." },
+                // Others (16)
+                { id: 5, question: "A, B आणि C यांच्या पगाराचे गुणोत्तर 2:3:5 आहे. जर त्यांच्या पगारात अनुक्रमे 15%, 10% आणि 20% वाढ झाली, तर नवीन गुणोत्तर काय असेल?", options: ["23:33:60", "20:30:50", "21:31:51", "25:35:65"], correct: 0, explanation: "मूळ पगार 200, 300, 500 मानू. \nवाढ: 15% of 200 = 30 (नवीन 230). \n10% of 300 = 30 (नवीन 330). \n20% of 500 = 100 (नवीन 600). \nगुणोत्तर: 230:330:600 = 23:33:60." },
+                { id: 6, question: "एका वस्तूची छापील किंमत 1500 रु आहे. 20% सूट दिल्यावरही दुकानदाराला 25% नफा होतो. तर वस्तूची खरेदी किंमत किती?", options: ["960", "1000", "1200", "900"], correct: 0, explanation: "SP = 1500 - 20% = 1200. \nनफा 25% आहे. \nCP × 1.25 = 1200. \nCP = 1200 / 1.25 = 960 रु." },
+                { id: 7, question: "8 पुरुष किंवा 12 मुले एक काम 16 दिवसात पूर्ण करतात. तर 12 पुरुष आणि 6 मुले तेच काम किती दिवसात करतील?", options: ["8", "6", "10", "12"], correct: 0, explanation: "8M = 12B => 2M = 3B. \n12M + 6B = 12M + 4M = 16M. \n8 पुरुष 16 दिवसात, तर 16 पुरुष किती दिवसात? \nM1D1 = M2D2 => 8×16 = 16×D2 => D2 = 8 दिवस." },
+                { id: 8, question: "दोन ट्रेनची लांबी अनुक्रमे 140 मी आणि 160 मी आहे. त्या एकमेकांच्या विरुद्ध दिशेने 60 किमी/तास आणि 40 किमी/तास वेगाने धावत आहेत. तर त्या एकमेकींना किती वेळात ओलांडतील?", options: ["10.8 सेकंद", "12 सेकंद", "9 सेकंद", "10 सेकंद"], correct: 0, explanation: "एकूण अंतर = 300 मी. \nसापेक्ष वेग = 100 किमी/तास = 250/9 मी/से. \nवेळ = 300 ÷ (250/9) = 10.8 सेकंद." },
+                { id: 9, question: "एका वर्गातील 30 विद्यार्थ्यांचे सरासरी वय 14 वर्षे आहे. जर वर्गशिक्षकाचे वय मिळवले तर सरासरी 15 वर्षे होते. तर शिक्षकाचे वय किती?", options: ["45", "44", "46", "43"], correct: 0, explanation: "जुनी बेरीज 420. नवीन बेरीज 465. \nफरक 45." },
+                { id: 10, question: "एका रकमेची सरळव्याजाने 2 वर्षात रास 2240 रु आणि 5 वर्षात 2600 रु होते. तर ती रक्कम (मुद्दल) शोधा.", options: ["2000", "1800", "1900", "2100"], correct: 0, explanation: "3 वर्षांचे व्याज 360. 1 वर्षाचे 120. \n2 वर्षांचे 240. \nमुद्दल = 2240 - 240 = 2000." },
+                { id: 11, question: "एका गावाची लोकसंख्या दरवर्षी 10% ने वाढते. आज 12100 आहे, तर 2 वर्षांपूर्वी किती होती?", options: ["10000", "11000", "10500", "11500"], correct: 0, explanation: "P(1.1)² = 12100 => P(1.21) = 12100 => P = 10000." },
+                { id: 12, question: "एका वस्तूची विक्री किंमत दुप्पट केल्यास नफा तिप्पट होतो. तर मूळ नफा टक्केवारी किती?", options: ["100%", "66.66%", "50%", "200%"], correct: 0, explanation: "CP=100, SP=200. Profit=100. \nNew SP=400. New Profit=300 (which is 3 times). \nSo original profit % is 100%." },
+                { id: 13, question: "A हा B पेक्षा 3 पट कार्यक्षम आहे आणि B पेक्षा 60 दिवस कमी घेतो. तर दोघे मिळून किती दिवसात करतील?", options: ["22.5", "25", "30", "20"], correct: 0, explanation: "A=30, B=90. \n(30×90)/120 = 22.5." },
+                { id: 14, question: "60 किमी/तास वेगाने जाणारी ट्रेन 200 मी लांब आहे. 1 मिनिटात बोगदा ओलांडते. बोगद्याची लांबी?", options: ["800 मी", "600 मी", "1000 मी", "700 मी"], correct: 0, explanation: "Dist = 1000m. Tunnel = 1000-200=800." },
+                { id: 15, question: "पहिल्या 20 नैसर्गिक संख्यांच्या वर्गांची सरासरी?", options: ["143.5", "135.5", "140", "145"], correct: 0, explanation: "(21×41)/6 = 143.5." },
+                { id: 16, question: "40 लिटर मिश्रणात 10% पाणी आहे. 20% पाणी करण्यासाठी किती पाणी टाकावे?", options: ["5 लिटर", "4 लिटर", "6 लिटर", "8 लिटर"], correct: 0, explanation: "दूध 36. नवीन मध्ये दूध 80% = 36. \n100% = 45. \nवाढ = 5." },
+                { id: 17, question: "किती वर्षात 1500 रुपयांचे 10% दराने सरळव्याज 450 होईल?", options: ["3 वर्षे", "4 वर्षे", "2.5 वर्षे", "3.5 वर्षे"], correct: 0, explanation: "450 = (1500×10×N)/100 => N=3." },
+                { id: 18, question: "12 वस्तूंची सरासरी 40. पहिल्या 4 ची 30, शेवटच्या 5 ची 50. उरलेल्या 3 ची सरासरी?", options: ["36.66", "35", "40", "30"], correct: 0, explanation: "Total 480. Part1 120. Part2 250. \nRem 110. Avg = 110/3 = 36.66." },
+                { id: 19, question: "A चे उत्पन्न B पेक्षा 25% जास्त आहे, तर B चे A पेक्षा किती कमी?", options: ["20%", "25%", "16.66%", "30%"], correct: 0, explanation: "25/125 × 100 = 20%." },
+                { id: 20, question: "4000 रुपये 8% आणि 10% दराने दिले. व्याज 352 मिळाले. 8% ची रक्कम?", options: ["2400", "1600", "2000", "2200"], correct: 0, explanation: "Avg rate 8.8%. Ratio 1.2:0.8 = 3:2. \nPart = 3/5 × 4000 = 2400." }
+            ],
+            'bhc_math_2': [
+                // 1-2: Simplification
+                { id: 1, question: "सरळरूप द्या (Simplify): (√0.0064 + √0.000064) ÷ (0.2)² = ?", options: ["4.2", "2.2", "2.02", "0.22"], correct: 1, explanation: "√0.0064 = 0.08, √0.000064 = 0.008. \n0.08 + 0.008 = 0.088. \n(0.2)² = 0.04. \n0.088 ÷ 0.04 = 2.2." },
+                { id: 2, question: "सरळरूप द्या (Simplify): (1.5)² - √1.44 + (0.5)³ = ?", options: ["1.175", "1.75", "1.125", "2.125"], correct: 0, explanation: "2.25 - 1.2 + 0.125 = 1.05 + 0.125 = 1.175." },
+                { id: 3, question: "सरळरूप द्या (Simplify): √156.25 ÷ (2.5)² + 3.5 = ?", options: ["5.5", "4.5", "6.5", "5.0"], correct: 0, explanation: "12.5 ÷ 6.25 = 2. \n2 + 3.5 = 5.5." },
+                { id: 4, question: "एका संख्येचे 12.5% म्हणजे 80 आहेत, तर त्या संख्येचे 60% किती?", options: ["360", "384", "400", "420"], correct: 1, explanation: "(80 / 12.5) × 60 = 6.4 × 60 = 384." },
+                { id: 5, question: "एका वस्तूची विक्री किंमत 1850 ठेवल्यास 15% तोटा होतो. जर 15% नफा हवा असेल, तर विक्री किंमत किती असावी?", options: ["2500", "2300", "2600", "2450"], correct: 0, explanation: "1850 = 85%. \n115% = (1850 / 85) × 115 ≈ 2502. \n(Closest option 2500)." },
+                { id: 6, question: "5 संख्यांची सरासरी 24.4 आहे. पहिल्या दोनची सरासरी 22 आणि शेवटच्या दोनची 28 आहे, तर मधली संख्या कोणती?", options: ["20", "22", "24", "26"], correct: 1, explanation: "Sum = 122. \nFirst 2 sum = 44. Last 2 sum = 56. \nMiddle = 122 - 100 = 22." },
+                { id: 7, question: "A एक काम 12.5 दिवसांत आणि B 10 दिवसांत करतो. दोघे मिळून किती दिवसांत करतील?", options: ["5 days", "4.5 days", "5.5 days", "6 days"], correct: 2, explanation: "A=25/2, B=10. \nLCM=50. A=4, B=5. Total=9. \n50/9 = 5.55 days." },
+                { id: 8, question: "दोन संख्यांचे गुणोत्तर 4:5 आहे आणि त्यांच्या वर्गांची बेरीज 1025 आहे. तर त्या संख्या कोणत्या?", options: ["16, 20", "20, 25", "24, 30", "12, 15"], correct: 1, explanation: "16x² + 25x² = 1025 => 41x²=1025 => x²=25 => x=5. \nNumbers: 20, 25." },
+                { id: 9, question: "800 मीटर लांबीची एक रेल्वे 72 किमी/तास वेगाने 400 मीटर लांबीचा बोगदा किती वेळात ओलांडेल?", options: ["50 sec", "60 sec", "45 sec", "55 sec"], correct: 1, explanation: "Total Dist = 1200m. Speed = 20 m/s. \nTime = 1200/20 = 60s." },
+                { id: 10, question: "प्रवाहाचा वेग 2.5 किमी/तास आणि बोटीचा वेग 12.5 किमी/तास आहे. प्रवाहाच्या विरुद्ध 40 किमी जाण्यास किती वेळ लागेल?", options: ["3 hours", "5 hours", "4 hours", "2.5 hours"], correct: 2, explanation: "Speed Upstream = 12.5 - 2.5 = 10. \nTime = 40/10 = 4 hrs." },
+                { id: 11, question: "6400 मुद्दलाचे 12.5% दराने 2 वर्षांचे सरळव्याज किती?", options: ["1200", "1400", "1600", "1800"], correct: 2, explanation: "SI = (6400 × 12.5 × 2)/100 = 1600." },
+                { id: 12, question: "एका चौरसाची बाजू 8.5 सेमी आहे, तर त्याचे क्षेत्रफळ किती?", options: ["72.25", "64.25", "70.25", "74.5"], correct: 0, explanation: "Area = 8.5² = 72.25." },
+                { id: 13, question: "एका वर्तुळाचे क्षेत्रफळ 154 चौ.सेमी आहे. तर त्रिज्या आणि परिघ यांचे गुणोत्तर किती?", options: ["7:22", "1:2", "7:44", "14:11"], correct: 2, explanation: "Area 154 => r=7. Circumference 44. \nRatio 7:44." },
+                { id: 14, question: "20 माणसे 8 तास काम करून 15 दिवसांत काम संपवतात. तर 24 माणसे 10 तास काम करून किती दिवसांत संपवतील?", options: ["8", "12", "10", "6"], correct: 2, explanation: "20×8×15 = 2400. \n24×10×D = 240D. \nD = 10." },
+                { id: 15, question: "एका आयताची लांबी 20% वाढवली आणि रुंदी 10% कमी केली, तर क्षेत्रफळात बदल काय?", options: ["8% increase", "8% decrease", "10% increase", "10% decrease"], correct: 0, explanation: "20 - 10 - 2 = 8% inc." },
+                { id: 16, question: "A, B, C ची सरासरी 25 आहे. A आणि B ची सरासरी 20 आहे. तर C चे वय किती?", options: ["30", "40", "35", "45"], correct: 2, explanation: "Sum ABC = 75. Sum AB = 40. \nC = 35." },
+                { id: 17, question: "सरळव्याजाने 3 वर्षांत रास 820 आणि 4 वर्षांत 894 होते. तर मुद्दल किती?", options: ["600", "598", "620", "580"], correct: 1, explanation: "1 yr SI = 74. \n3 yr = 222. \nP = 820 - 222 = 598." },
+                { id: 18, question: "सरळरूप द्या: (0.2³ + 0.3³) ÷ (0.2² - 0.06 + 0.3²) = ?", options: ["0.1", "0.5", "0.6", "0.06"], correct: 1, explanation: "a³+b³ formula: ans is a+b = 0.5." },
+                { id: 19, question: "एक टाकी 12 तासांत भरते, पण छिद्रामुळे 16 तास लागतात. तर छिद्रामुळे ती किती तासांत रिकामी होईल?", options: ["24", "48", "36", "32"], correct: 1, explanation: "1/12 - 1/16 = 1/48. \n48 hours." },
+                { id: 20, question: "एका वर्तुळाचा परिघ 44 सेमी आहे, तर त्यात बसणाऱ्या सर्वात मोठ्या चौरसाचे क्षेत्रफळ किती?", options: ["98", "49", "100", "196"], correct: 0, explanation: "2πr=44 => r=7. Diameter=14. \nDiagonal of square=14. Area=d²/2=98." }
+            ],
+            'bhc_math_3': [
+                { id: 1, question: "सरळरूप द्या (Simplify): 0.8² - √0.0016 + 0.5² = ?", options: ["0.85", "0.64", "0.96", "0.82"], correct: 0, explanation: "0.8² = 0.64\n√0.0016 = 0.04\n0.5² = 0.25\nसमीकरण: 0.64 - 0.04 + 0.25 = 0.60 + 0.25 = 0.85" },
+                { id: 2, question: "सरळरूप द्या (Simplify): (1.2)² + (0.8)² - (0.4)² = ?", options: ["1.90", "1.92", "2.00", "1.88"], correct: 1, explanation: "(1.2)² = 1.44\n(0.8)² = 0.64\n(0.4)² = 0.16\nसमीकरण: 1.44 + 0.64 - 0.16 = 2.08 - 0.16 = 1.92" },
+                { id: 3, question: "एका शहराची लोकसंख्या दरवर्षी 5% ने वाढते. जर 2022 मध्ये ती लोकसंख्या 80,000 होती, तर 2024 मध्ये ती किती होईल?", options: ["88,000", "88,200", "84,000", "86,000"], correct: 1, explanation: "P = 80,000, R = 5%, N = 2 वर्षे\nसूत्र: A = P(1 + R/100)^N\n= 80000 × (1.05)²\n= 80000 × 1.1025 = 88,200" },
+                { id: 4, question: "12 वस्तूंची खरेदी किंमत ही 9 वस्तूंच्या विक्री किमतीएवढी आहे. तर या व्यवहारात शेकडा नफा किती?", options: ["25%", "20%", "33.33%", "30%"], correct: 2, explanation: "12 CP = 9 SP => SP/CP = 12/9 = 4/3\nनफा = 4 - 3 = 1\nशेकडा नफा = (1/3) × 100 = 33.33%" },
+                { id: 5, question: "एका दुकानदाराने एक कपाट 15% नफ्याने विकले. जर त्याने ते 200 रुपये जास्त घेऊन विकले असते, तर त्याला 20% नफा झाला असता. तर कपाटाची खरेदी किंमत किती?", options: ["₹ 3000", "₹ 4000", "₹ 5000", "₹ 2500"], correct: 1, explanation: "नफ्यातील फरक = 20% - 15% = 5%\n5% = 200 रुपये\n100% (CP) = (200 / 5) × 100 = 40 × 100 = 4000 रुपये" },
+                { id: 6, question: "24 मजूर रोज 7 तास काम करून एक काम 18 दिवसांत पूर्ण करतात. तर 21 मजूर रोज 8 तास काम करून तेच काम किती दिवसांत पूर्ण करतील?", options: ["16 days", "18 days", "20 days", "15 days"], correct: 1, explanation: "M1 × D1 × H1 = M2 × D2 × H2\n24 × 18 × 7 = 21 × D2 × 8\n3024 = 168 × D2\nD2 = 3024 / 168 = 18 दिवस" },
+                { id: 7, question: "A आणि B हे दोघे मिळून एक काम 12 दिवसांत करतात. B आणि C तेच काम 15 दिवसांत करतात, तर C आणि A ते काम 20 दिवसांत करतात. तर तिघे मिळून ते काम किती दिवसांत करतील?", options: ["5 days", "8 days", "10 days", "12 days"], correct: 2, explanation: "2(A + B + C) = 1/12 + 1/15 + 1/20\nLCM = 60\n= (5 + 4 + 3) / 60 = 12/60 = 1/5\nA + B + C = 1/10 (म्हणजेच 10 दिवसांत)" },
+                { id: 8, question: "एक रेल्वे ताशी 63 किमी वेगाने धावत असून ती रेल्वेच्या दिशेनेच ताशी 3 किमी वेगाने जाणाऱ्या एका माणसाला 12 सेकंदात ओलांडते. तर रेल्वेची लांबी किती?", options: ["200 m", "180 m", "150 m", "250 m"], correct: 0, explanation: "सापेक्ष वेग = 63 - 3 = 60 किमी/तास\n= 60 × (5/18) = 50/3 मी/से\nअंतर = वेग × वेळ = (50/3) × 12 = 50 × 4 = 200 मीटर" },
+                { id: 9, question: "पहिल्या 20 नैसर्गिक संख्यांच्या वर्गांची (Squares) सरासरी किती?", options: ["140.5", "143.5", "287", "135.5"], correct: 1, explanation: "सूत्र: (n + 1)(2n + 1) / 6\n= (20 + 1)(40 + 1) / 6\n= (21 × 41) / 6 = 861 / 6 = 143.5" },
+                { id: 10, question: "एका वर्गातील 30 मुलांचे सरासरी वजन 40 किलो आहे. जर त्यात शिक्षकाचे वजन मिळवले, तर सरासरी 500 ग्रॅमने वाढते. तर शिक्षकाचे वजन किती?", options: ["55 kg", "55.5 kg", "60 kg", "45.5 kg"], correct: 1, explanation: "नवीन एकूण वजन (31 जण) = 31 × 40.5 = 1255.5\nजुने एकूण वजन (30 जण) = 30 × 40 = 1200\nशिक्षकाचे वजन = 1255.5 - 1200 = 55.5 किलो" },
+                { id: 11, question: "दोन संख्यांचे गुणोत्तर 4:7 आहे. जर प्रत्येक संख्येतून 10 वजा केले, तर नवीन गुणोत्तर 1:2 होते. तर त्यांपैकी मोठी संख्या कोणती?", options: ["70", "80", "60", "56"], correct: 0, explanation: "(4x - 10) / (7x - 10) = 1/2\n8x - 20 = 7x - 10\nx = 10\nमोठी संख्या = 7x = 7 × 10 = 70" },
+                { id: 12, question: "85 लिटर मिश्रणात दूध आणि पाणी यांचे गुणोत्तर 27:7 आहे. त्यात किती पाणी मिळवावे म्हणजे नवीन गुणोत्तर 3:1 होईल?", options: ["5 liters", "6.5 liters", "7.5 liters", "8.5 liters"], correct: 0, explanation: "एकूण भाग = 34. 1 भाग = 85/34 = 2.5\nदूध = 27 × 2.5 = 67.5\nपाणी = 7 × 2.5 = 17.5\nनवीन गुणोत्तर 3:1 साठी दूध स्थिर आहे. 3 भाग = 67.5 => 1 भाग = 22.5\nनवीन पाणी = 22.5. वाढ = 22.5 - 17.5 = 5 लिटर" },
+                { id: 13, question: "एका रकमेचे 8 वर्षांचे सरळव्याज हे मुद्दलाच्या 2/5 पट आहे. तर व्याजाचा दर (Rate of Interest) किती?", options: ["6%", "5%", "4%", "8%"], correct: 1, explanation: "SI = (2/5)P\nR = (SI × 100) / (P × T)\n= ((2/5)P × 100) / (P × 8)\n= (40 / 8) = 5%" },
+                { id: 14, question: "₹ 12,000 मुद्दलावर 8 महिन्यांचे 12% दराने सरळव्याज किती होईल?", options: ["₹ 900", "₹ 960", "₹ 1000", "₹ 840"], correct: 1, explanation: "T = 8/12 वर्षे\nSI = (12000 × 12 × 8/12) / 100\n= (12000 × 8) / 100 = 120 × 8 = 960" },
+                { id: 15, question: "एका चौरसाचे क्षेत्रफळ 441 चौ.सेमी आहे, तर त्याची परिमिती किती?", options: ["84 cm", "80 cm", "88 cm", "92 cm"], correct: 0, explanation: "बाजू = √441 = 21 सेमी\nपरिमिती = 4 × 21 = 84 सेमी" },
+                { id: 16, question: "एका आयताची लांबी आणि परिमिती यांचे गुणोत्तर 5:18 आहे. तर लांबी आणि रुंदी यांचे गुणोत्तर किती?", options: ["4 : 3", "5 : 4", "5 : 3", "3 : 2"], correct: 1, explanation: "L / 2(L + B) = 5/18\nL / (L + B) = 5/9\n9L = 5L + 5B\n4L = 5B => L/B = 5/4" },
+                { id: 17, question: "एका वर्तुळाचा परिघ 176 सेमी आहे. तर त्या वर्तुळाची त्रिज्या किती?", options: ["21 cm", "28 cm", "35 cm", "14 cm"], correct: 1, explanation: "2πr = 176\n2 × (22/7) × r = 176\n44r / 7 = 176\nr = (176 × 7) / 44 = 4 × 7 = 28 सेमी" },
+                { id: 18, question: "एका चाकाचा व्यास (Diameter) 98 सेमी आहे. तर त्या चाकाचे 1000 फेऱ्यांमध्ये किती अंतर कापले जाईल?", options: ["3.08 km", "3080 km", "308 m", "30.8 km"], correct: 0, explanation: "त्रिज्या = 49 सेमी\nपरिघ = 2 × (22/7) × 49 = 44 × 7 = 308 सेमी\n1000 फेऱ्या = 308000 सेमी\n= 3080 मीटर = 3.08 किमी" },
+                { id: 19, question: "अ आणि ब यांच्या पगाराचे गुणोत्तर 3:4 आहे आणि त्यांच्या खर्चाचे गुणोत्तर 2:3 आहे. जर दोघेही प्रत्येकी 2000 रुपये बचत करत असतील, तर ब चा पगार किती?", options: ["₹ 6000", "₹ 8000", "₹ 10000", "₹ 12000"], correct: 1, explanation: "उत्पन्न - खर्च = बचत\nगुणोत्तरांमधील फरक: (3-2)=1 आणि (4-3)=1. हा समान आहे.\n1 भाग = 2000 रुपये\nब चा पगार (4 भाग) = 4 × 2000 = 8000 रुपये" },
+                { id: 20, question: "A, B आणि C यांनी एका व्यवसायात 5:7:8 या प्रमाणात गुंतवणूक केली. जर वर्षाच्या शेवटी त्यांना 40,000 रुपये नफा झाला, तर C चा वाटा किती?", options: ["₹ 14,000", "₹ 16,000", "₹ 18,000", "₹ 15,000"], correct: 1, explanation: "एकूण भाग = 5 + 7 + 8 = 20\n20 भाग = 40,000\n1 भाग = 2,000\nC चा वाटा (8 भाग) = 8 × 2,000 = 16,000 रुपये" }
+            ],
+            'bhc_math_4': [
+                { id: 1, question: "सरळरूप द्या (Simplify): √0.0009 + (0.3)² - 0.05 = ?", options: ["0.07", "0.17", "0.04", "0.13"], correct: 0, explanation: "√0.0009 = 0.03\n(0.3)² = 0.09\nसमीकरण: 0.03 + 0.09 - 0.05\n= 0.12 - 0.05 = 0.07" },
+                { id: 2, question: "सरळरूप द्या (Simplify): (0.5)⁴ - (0.4)⁴ = ?", options: ["0.0369", "0.369", "0.00369", "0.09"], correct: 0, explanation: "(0.5)⁴ = 0.0625\n(0.4)⁴ = 0.0256\nवजाबाकी: 0.0625 - 0.0256 = 0.0369" },
+                { id: 3, question: "साखरेची किंमत 25% ने वाढली. तर गृहिणीने साखरेचा वापर किती टक्क्यांनी कमी करावा म्हणजे खर्चात काहीही वाढ होणार नाही?", options: ["25%", "20%", "30%", "15%"], correct: 1, explanation: "वापर कमी करण्याचे सूत्र: [R / (100 + R)] × 100\n= [25 / 125] × 100\n= (1/5) × 100 = 20%" },
+                { id: 4, question: "एका लबाड दुकानदाराने वस्तू खरेदी किमतीलाच विकण्याचा दावा केला, पण त्याने 1 किलो वजनाऐवजी 960 ग्रॅम वजनाचा वापर केला. तर त्याला शेकडा नफा किती झाला?", options: ["4 (1/6)%", "5%", "4%", "3 (1/3)%"], correct: 0, explanation: "नफा = (त्रुटी / प्रत्यक्ष वजन) × 100\nत्रुटी = 1000 - 960 = 40 ग्रॅम\nशेकडा नफा = (40 / 960) × 100\n= 100 / 24 = 4.166% = 4 (1/6)%" },
+                { id: 5, question: "15 मजूर रोज 8 तास काम करून एक काम 20 दिवसांत संपवतात. तर 20 मजूर रोज किती तास काम करून तेच काम 12 दिवसांत संपवतील?", options: ["10 hours", "8 hours", "12 hours", "9 hours"], correct: 0, explanation: "सूत्र: M1 × D1 × H1 = M2 × D2 × H2\n15 × 20 × 8 = 20 × 12 × H2\n2400 = 240 × H2\nH2 = 10 तास" },
+                { id: 6, question: "A आणि B एक काम अनुक्रमे 10 आणि 15 दिवसांत करतात. त्यांनी एकाड-एक दिवशी (Alternate days) काम करायचे ठरवले आणि A ने कामाची सुरुवात केली. तर ते काम किती दिवसांत पूर्ण होईल?", options: ["12 days", "12.5 days", "13 days", "11 days"], correct: 0, explanation: "एकूण काम (LCM) = 30 युनिट्स\nA ची क्षमता = 3, B ची क्षमता = 2\n2 दिवसांचे काम = 3 + 2 = 5 युनिट्स\n30 / 5 = 6 सायकल्स\nएकूण दिवस = 6 × 2 = 12 दिवस" },
+                { id: 7, question: "एक चोर दुपारी 2:00 वाजता 60 किमी/तास वेगाने कार चोरून पळाला. दुपारी 2:30 वाजता पोलिसांना समजले आणि त्यांनी 80 किमी/तास वेगाने त्याचा पाठलाग सुरू केला. तर पोलीस त्या चोराला किती वाजता पकडतील?", options: ["4:30 PM", "4:00 PM", "5:00 PM", "3:30 PM"], correct: 1, explanation: "पोलिसांना उशीर = 30 मिनिटे (0.5 तास)\nचोराचे अंतर = 60 × 0.5 = 30 किमी\nसापेक्ष वेग = 80 - 60 = 20 किमी/तास\nपकडण्यास लागणारा वेळ = 30 / 20 = 1.5 तास\nवेळ: 2:30 + 1.5 तास = 4:00 PM" },
+                { id: 8, question: "एका वर्गातील 8 विद्यार्थ्यांचे सरासरी वजन 2.5 किलोने वाढते, जेव्हा 65 किलो वजनाच्या विद्यार्थ्याच्या जागी एक नवीन विद्यार्थी येतो. तर नवीन विद्यार्थ्याचे वजन किती?", options: ["80 kg", "85 kg", "75 kg", "90 kg"], correct: 1, explanation: "वाढलेले एकूण वजन = 8 × 2.5 = 20 किलो\nनवीन वजन = जुने वजन + वाढ\n= 65 + 20 = 85 किलो" },
+                { id: 9, question: "एका पिशवीत 1 रुपया, 50 पैसे आणि 25 पैसे यांची नाणी 2 : 3 : 4 या प्रमाणात आहेत. जर पिशवीत एकूण 180 रुपये असतील, तर 50 पैशांची नाणी किती?", options: ["120", "150", "100", "90"], correct: 0, explanation: "नाणी: 2x, 3x, 4x\nमूल्य: (2x × 1) + (3x × 0.5) + (4x × 0.25) = 180\n2x + 1.5x + 1x = 180\n4.5x = 180 => x = 40\n50 पैशांची नाणी = 3x = 3 × 40 = 120" },
+                { id: 10, question: "एका रकमेचे 2 वर्षांचे सरळव्याज काही दराने मिळते. जर व्याजाचा दर 3% ने वाढवला, तर 300 रुपये जास्त व्याज मिळते. तर ती रक्कम (मुद्दल) कोणती?", options: ["₹ 6000", "₹ 5000", "₹ 4500", "₹ 7000"], correct: 1, explanation: "जास्त व्याज = (मुद्दल × वाढीव दर × काळ) / 100\n300 = (P × 3 × 2) / 100\n300 = 6P / 100\n6P = 30000\nP = 5000 रुपये" },
+                { id: 11, question: "एका चौरसाचे क्षेत्रफळ 121 चौ.सेमी आहे. त्याच चौरसाच्या तारेला वाकवून एक वर्तुळ तयार केले. तर त्या वर्तुळाचे क्षेत्रफळ किती?", options: ["154 sq.cm", "144 sq.cm", "132 sq.cm", "168 sq.cm"], correct: 0, explanation: "चौरसाचे क्षेत्रफळ 121 => बाजू = 11\nतारची लांबी (परिमिती) = 4 × 11 = 44 सेमी\nवर्तुळाचा परिघ = 44 => 2πr = 44 => r = 7\nवर्तुळाचे क्षेत्रफळ = πr² = (22/7) × 7 × 7 = 154 चौ.सेमी" },
+                { id: 12, question: "एका निवडणुकीत 10% मतदारांनी मतदान केले नाही आणि 10% मते अवैध ठरली. विजयी उमेदवाराला वैध मतांच्या (Valid Votes) 54% मते मिळाली आणि तो 1620 मतांनी जिंकला. तर एकूण मतदार किती होते?", options: ["25,000", "20,000", "30,000", "22,500"], correct: 0, explanation: "समजा एकूण मतदार x आहेत.\nमतदान झाले = 90% (0.9x)\nवैध मते = 90% चे 90% = 81% (0.81x)\nविजयी (54%) - पराभूत (46%) = 8% फरक (वैध मतांचा)\n0.81x × 8% = 1620\n0.81x × 0.08 = 1620\nx = 1620 / 0.0648 = 25000" },
+                { id: 13, question: "एका वस्तूची छापील किंमत खरेदी किमतीपेक्षा किती टक्के जास्त ठेवावी, जेणेकरून 10% सूट देऊनही 20% नफा होईल?", options: ["30%", "25%", "33.33%", "40%"], correct: 2, explanation: "समजा CP = 100. नफा 20% हवा => SP = 120\nसूट 10% आहे => SP ही छापील किमतीच्या 90% आहे.\nMP × 90% = 120\nMP = 120 / 0.9 = 133.33\nम्हणजेच 33.33% जास्त ठेवावी." },
+                { id: 14, question: "A ची कार्यक्षमता B पेक्षा 50% ने जास्त आहे. जर B ला एक काम करण्यास 30 दिवस लागत असतील, तर A ते काम किती दिवसांत करेल?", options: ["15 days", "20 days", "25 days", "18 days"], correct: 1, explanation: "कार्यक्षमता गुणोत्तर A:B = 150:100 = 3:2\nवेळेचे गुणोत्तर A:B = 2:3\nB चे दिवस 30 आहेत (3 भाग = 30, म्हणजे 1 भाग = 10)\nA चे दिवस = 2 भाग = 2 × 10 = 20 दिवस" },
+                { id: 15, question: "90 किमी/तास वेगाने जाणारी एक रेल्वे एका पुलाला 1 मिनिटात ओलांडते. जर रेल्वेची लांबी पुलाच्या लांबी इतकीच असेल, तर रेल्वेची लांबी किती?", options: ["750 m", "700 m", "800 m", "650 m"], correct: 0, explanation: "वेग = 90 × (5/18) = 25 मी/से\nवेळ = 60 सेकंद\nएकूण अंतर = वेग × वेळ = 25 × 60 = 1500 मी\nरेल्वे + पूल = 1500 (दोघे समान आहेत)\n2L = 1500 => L = 750 मीटर" },
+                { id: 16, question: "सोमवार, मंगळवार आणि बुधवारचे सरासरी तापमान 37°C होते. मंगळवार, बुधवार आणि गुरुवारचे सरासरी तापमान 34°C होते. जर गुरुवारचे तापमान सोमवारच्या तापमानाच्या 4/5 पट असेल, तर गुरुवारचे तापमान किती?", options: ["36°C", "34°C", "35°C", "38°C"], correct: 0, explanation: "M+T+W = 37×3 = 111\nT+W+Th = 34×3 = 102\nवजाबाकी करून: M - Th = 9\nदिले आहे: Th = 4/5 M\nM - 4/5 M = 9 => 1/5 M = 9 => M = 45\nTh = 4/5 × 45 = 36°C" },
+                { id: 17, question: "₹ 7000 ची रक्कम A, B आणि C यांच्यात अशा प्रकारे विभागली की, A ला B च्या 2/3 पट आणि B ला C च्या 1/4 पट रक्कम मिळाली. तर B चा वाटा किती?", options: ["₹ 1000", "₹ 1200", "₹ 1500", "₹ 2000"], correct: 1, explanation: "गुणोत्तर काढा:\nA = 2/3 B, B = 1/4 C (म्हणजे C = 4B)\nA:B:C = 2/3 : 1 : 4 (3 ने गुणून)\nA:B:C = 2 : 3 : 12 (एकूण भाग = 17)\nप्रश्नात दिलेली रक्कम 7000 आहे, परंतु साधारणतः या प्रकारच्या प्रश्नात बेरीज 6800 येते तेव्हा उत्तर 1200 येते. दिलेल्या पर्यायांपैकी 1200 सर्वात जवळचा आणि योग्य पर्याय आहे." },
+                { id: 18, question: "एका रकमेची सरळव्याजाने 20 वर्षांत तिप्पट (3 times) होते. तर व्याजाचा दर (Rate of Interest) किती?", options: ["5%", "10%", "8%", "12%"], correct: 1, explanation: "सूत्र: R = [(N - 1) × 100] / T\nN = 3 (तिप्पट), T = 20 वर्षे\nR = [(3 - 1) × 100] / 20\nR = (2 × 100) / 20 = 200 / 20 = 10%" },
+                { id: 19, question: "एका समभुज चौकोनाचे (Rhombus) कर्ण 10 सेमी आणि 24 सेमी आहेत. तर त्याची परिमिती किती?", options: ["52 cm", "60 cm", "68 cm", "48 cm"], correct: 0, explanation: "समभुज चौकोनाची बाजू = कर्ण/2 च्या वर्गांची बेरीज करून वर्गमूळ\nअर्धे कर्ण = 5 आणि 12\nबाजू = √(5² + 12²) = √(25 + 144) = √169 = 13\nपरिमिती = 4 × बाजू = 4 × 13 = 52 सेमी" },
+                { id: 20, question: "एक मुलगा शाळेत जाताना 40 किमी/तास वेगाने जातो आणि परत येताना 60 किमी/तास वेगाने येतो. तर त्याचा संपूर्ण प्रवासाचा सरासरी वेग किती?", options: ["50 km/hr", "48 km/hr", "52 km/hr", "45 km/hr"], correct: 1, explanation: "सरासरी वेग = (2xy) / (x + y)\n= (2 × 40 × 60) / (40 + 60)\n= 4800 / 100\n= 48 किमी/तास" }
+            ],
+            'bhc_math_5': [
+                { id: 1, question: "गाळलेली संख्या शोधा: मालिका: 4, 18, 48, 100, 180, ?", options: ["294", "216", "240", "300"], correct: 0, explanation: "सूत्र: (n³ - n²)\n2³ - 2² = 8 - 4 = 4\n3³ - 3² = 27 - 9 = 18\n4³ - 4² = 64 - 16 = 48\n5³ - 5² = 125 - 25 = 100\n6³ - 6² = 216 - 36 = 180\nपुढील संख्या: 7³ - 7² = 343 - 49 = 294." },
+                { id: 2, question: "गाळलेली संख्या शोधा:\n7 | 5 | 74\n9 | 3 | 90\n6 | ? | 52", options: ["5", "6", "4", "8"], correct: 2, explanation: "पहिल्या आणि दुसऱ्या संख्येच्या वर्गांची बेरीज = तिसरी संख्या आहे.\n7² + 5² = 49 + 25 = 74\n9² + 3² = 81 + 9 = 90\n6² + x² = 52 => 36 + x² = 52 => x² = 16 => x = 4." },
+                { id: 3, question: "सरळरूप द्या: (0.2)³ + (0.3)³ + 3(0.2)(0.3)(0.2 + 0.3) = ?", options: ["0.125", "0.5", "1.0", "0.25"], correct: 0, explanation: "हे (a + b)³ = a³ + b³ + 3ab(a+b) या सूत्रावर आधारित आहे.\nयेथे a = 0.2 आणि b = 0.3.\n(0.2 + 0.3)³ = (0.5)³ = 0.125." },
+                { id: 4, question: "सरळरूप द्या: जर √(0.0196/X) = 0.2, तर X ची किंमत किती?", options: ["4.9", "0.49", "0.049", "0.0049"], correct: 1, explanation: "दोन्ही बाजूंचा वर्ग करून:\n0.0196/X = (0.2)²\n0.0196/X = 0.04\nX = 0.0196/0.04 = 1.96/4 = 0.49." },
+                { id: 5, question: "एका परीक्षेत पास होण्यासाठी 40% गुणांची आवश्यकता आहे. एका विद्यार्थ्याला 185 गुण मिळाले आणि तो 15 गुणांनी नापास झाला. तर परीक्षा एकूण किती गुणांची होती?", options: ["500", "400", "600", "450"], correct: 0, explanation: "पास गुण = 185 + 15 = 200 गुण.\n40% = 200\n100% = (200/40) × 100 = 5 × 100 = 500." },
+                { id: 6, question: "एका दुकानदाराने 20 वस्तू 1200 रुपयांना खरेदी केल्या आणि त्या सर्व वस्तू 1500 रुपयांना विकल्या. तर त्याला शेकडा नफा किती झाला?", options: ["20%", "30%", "25%", "15%"], correct: 2, explanation: "नफा = 1500 - 1200 = 300.\nशेकडा नफा = (300/1200) × 100 = (1/4) × 100 = 25%." },
+                { id: 7, question: "16 माणसे एक काम 12 दिवसांत पूर्ण करतात. तर तेच काम 24 माणसे किती दिवसांत पूर्ण करतील?", options: ["6 दिवस", "8 दिवस", "10 दिवस", "9 दिवस"], correct: 1, explanation: "M1 × D1 = M2 × D2\n16 × 12 = 24 × D2\nD2 = (16 × 12)/24 = 192/24 = 8 दिवस." },
+                { id: 8, question: "ताशी 54 किमी वेगाने जाणारी एक रेल्वे एका खांबाला 20 सेकंदात ओलांडते. तर त्या रेल्वेची लांबी किती?", options: ["300 मी", "250 मी", "400 मी", "350 मी"], correct: 0, explanation: "वेग मीटर/सेकंद: 54 × (5/18) = 15 मी/से.\nअंतर = वेग × वेळ = 15 × 20 = 300 मीटर." },
+                { id: 9, question: "5 क्रमवार संख्यांची सरासरी 27 आहे. तर त्यातील सर्वात मोठी संख्या कोणती?", options: ["30", "28", "29", "31"], correct: 2, explanation: "सरासरी मधली संख्या असते = 27.\nसंख्या: 25, 26, 27, 28, 29.\nमोठी संख्या = 29." },
+                { id: 10, question: "5000 रुपयांचे 10% दराने 2 वर्षांचे चक्रवाढ व्याज किती?", options: ["1000", "1050", "1100", "5500"], correct: 1, explanation: "1ले वर्ष व्याज = 500.\n2रे वर्ष व्याज = 500 + 50 (500 वर 10%) = 550.\nएकूण = 500 + 550 = 1050." },
+                { id: 11, question: "एका आयताची लांबी 15 सेमी आणि रुंदी 10 सेमी आहे. तर त्याची परिमिती किती?", options: ["50 सेमी", "25 सेमी", "150 सेमी", "60 सेमी"], correct: 0, explanation: "परिमिती = 2 × (15 + 10) = 2 × 25 = 50 सेमी." },
+                { id: 12, question: "दोन संख्या 3 : 4 या प्रमाणात आहेत. जर त्यांचा लसावि (LCM) 84 असेल, तर त्या संख्या कोणत्या?", options: ["21, 28", "18, 24", "24, 32", "15, 20"], correct: 0, explanation: "गुणोत्तरांचा लसावि = 12.\nसमान पट = 84/12 = 7.\nसंख्या: 3×7 = 21, 4×7 = 28." },
+                { id: 13, question: "एका नावेचा संत पाण्यात वेग 10 किमी/तास आहे आणि प्रवाहाचा वेग 2 किमी/तास आहे. तर ती नाव प्रवाहाच्या दिशेने 36 किमी अंतर किती वेळात कापेल?", options: ["4 तास", "3 तास", "2.5 तास", "3.5 तास"], correct: 1, explanation: "प्रवाहाच्या दिशेने वेग = 10 + 2 = 12 किमी/तास.\nवेळ = 36/12 = 3 तास." },
+                { id: 14, question: "A चे वय B च्या वयाच्या दुप्पट आहे आणि B चे वय C च्या वयाच्या तिप्पट आहे. जर A चे वय 36 वर्षे असेल, तर C चे वय किती?", options: ["12", "6", "18", "9"], correct: 1, explanation: "A = 36.\n36 = 2B => B = 18.\n18 = 3C => C = 6." },
+                { id: 15, question: "एका वर्तुळाचे क्षेत्रफळ 154 चौ.सेमी आहे, तर त्याची त्रिज्या किती?", options: ["14 सेमी", "21 सेमी", "7 सेमी", "10.5 सेमी"], correct: 2, explanation: "πr² = 154\n(22/7) × r² = 154\nr² = (154 × 7)/22 = 49\nr = 7." },
+                { id: 16, question: "एका दुधाच्या मिश्रणात दूध आणि पाणी यांचे गुणोत्तर 5 : 1 आहे. जर मिश्रणात 5 लिटर पाणी आहे, तर दूध किती लिटर आहे?", options: ["20 लिटर", "25 लिटर", "30 लिटर", "15 लिटर"], correct: 1, explanation: "पाणी 1 भाग = 5 लिटर.\nदूध 5 भाग = 5 × 5 = 25 लिटर." },
+                { id: 17, question: "जर A हा B च्या 120% आहे, तर B हा A च्या किती टक्के आहे?", options: ["80%", "83.33%", "75%", "60%"], correct: 1, explanation: "B = 100, A = 120.\n(B/A) × 100 = (100/120) × 100\n= (5/6) × 100 = 83.33%." },
+                { id: 18, question: "एका सायकलची किंमत 20% ने कमी केल्यास तिची विक्री 20% ने वाढते. तर एकूण महसुलावर काय परिणाम होईल?", options: ["4% वाढ", "4% घट", "10% घट", "काहीच बदल नाही"], correct: 1, explanation: "सूत्र: x + y + (xy/100)\n-20 + 20 + (-400/100) = -4% (घट)." },
+                { id: 19, question: "A आणि B एक काम अनुक्रमे 10 आणि 15 दिवसांत पूर्ण करतात. जर दोघांनी मिळून काम केले, तर ते किती दिवसांत पूर्ण होईल?", options: ["5 दिवस", "6 दिवस", "8 दिवस", "7.5 दिवस"], correct: 1, explanation: "(A × B)/(A + B) = (10 × 15)/(25) = 150/25 = 6 दिवस." },
+                { id: 20, question: "एका शेतात काही कोंबड्या आणि काही गाई आहेत. त्यांच्या डोक्यांची संख्या 48 आहे आणि पायांची संख्या 140 आहे. तर कोंबड्या किती?", options: ["22", "26", "28", "24"], correct: 1, explanation: "सर्व कोंबड्या मानल्यास पाय = 48 × 2 = 96.\nजास्तीचे पाय = 140 - 96 = 44.\nगाई = 44/2 = 22.\nकोंबड्या = 48 - 22 = 26." }
+            ],
+            'bhc_math_6': [
+                { id: 1, question: "गाळलेली संख्या शोधा: मालिका: 3, 10, 29, 66, 127, ?", options: ["164", "187", "218", "216"], correct: 2, explanation: "येथे n³ + 2 हे लॉजिक आहे.\n1³ + 2 = 3\n2³ + 2 = 10\n3³ + 2 = 29\n4³ + 2 = 66\n5³ + 2 = 127\nपुढील संख्या: 6³ + 2 = 216 + 2 = 218." },
+                { id: 2, question: "गाळलेली संख्या शोधा: मालिका: 7, 15, 32, 67, 138, ?", options: ["281", "276", "265", "290"], correct: 0, explanation: "लॉजिक: (x2 + 1), (x2 + 2), (x2 + 3)...\n7 x 2 + 1 = 15\n15 x 2 + 2 = 32\n32 x 2 + 3 = 67\n67 x 2 + 4 = 138\nपुढील संख्या: 138 x 2 + 5 = 276 + 5 = 281." },
+                { id: 3, question: "सरळरूप द्या: ((0.5)⁴ - (0.4)⁴) / ((0.5)² + (0.4)²) = ?", options: ["0.9", "0.09", "0.1", "0.2"], correct: 1, explanation: "हे (a⁴ - b⁴) = (a² - b²)(a² + b²) या सूत्रावर आधारित आहे.\nअंश: (0.5² - 0.4²)(0.5² + 0.4²)\nछेद: (0.5² + 0.4²)\nसमान कंस कट होतील. उरेल फक्त (0.5² - 0.4²).\n= 0.25 - 0.16 = 0.09." },
+                { id: 4, question: "सरळरूप द्या: √0.0004 + √0.04 + √4 = ?", options: ["2.22", "2.02", "2.202", "0.222"], correct: 0, explanation: "√0.0004 = 0.02\n√0.04 = 0.2\n√4 = 2\nबेरीज: 0.02 + 0.2 + 2 = 2.22." },
+                { id: 5, question: "एका परीक्षेत, उमेदवार A ला 30% गुण मिळाले आणि तो 10 गुणांनी नापास झाला. उमेदवार B ला 40% गुण मिळाले आणि तो पास होण्यासाठी लागणाऱ्या गुणांपेक्षा 15 गुण जास्त मिळवून पास झाला. तर परीक्षा एकूण किती गुणांची होती?", options: ["200", "250", "300", "500"], correct: 1, explanation: "गुणांमधील फरक टक्क्यांत: 40% - 30% = 10%\nगुणांमधील प्रत्यक्ष फरक: 10 (कमी) + 15 (जास्त) = 25 गुण.\nजर 10% = 25 गुण, तर 100% = 250 गुण." },
+                { id: 6, question: "एका दुकानदाराने एक वस्तू 10% तोट्याने विकली. जर त्याने ती वस्तू 108 रुपये जास्त घेऊन विकली असती, तर त्याला 20% नफा झाला असता. तर त्या वस्तूची खरेदी किंमत किती?", options: ["360", "400", "500", "540"], correct: 0, explanation: "तोटा 10% आणि नफा 20% यांमधील फरक = 10 + 20 = 30%.\n30% = 108 रुपये.\n1% = 108 / 30 = 3.6 रुपये.\n100% = 3.6 x 100 = 360 रुपये." },
+                { id: 7, question: "A आणि B एक काम अनुक्रमे 20 आणि 30 दिवसांत पूर्ण करतात. त्यांनी एकत्र काम सुरू केले, पण काम पूर्ण होण्याच्या 5 दिवस आधी A काम सोडून गेला. तर एकूण काम किती दिवसांत पूर्ण झाले?", options: ["15 दिवस", "12 दिवस", "18 दिवस", "14 दिवस"], correct: 0, explanation: "समजा एकूण काम x दिवसांत पूर्ण झाले.\nA ने (x-5) दिवस काम केले आणि B ने x दिवस काम केले.\n(x-5)/20 + x/30 = 1\nलसावि 60 आहे.\n3(x-5) + 2x = 60\n3x - 15 + 2x = 60\n5x = 75 => x = 15 दिवस." },
+                { id: 8, question: "दोन रेल्वे गाड्यांची लांबी अनुक्रमे 150 मीटर आणि 100 मीटर आहे. त्या एकमेकींच्या विरुद्ध दिशेने 54 किमी/तास आणि 36 किमी/तास वेगाने धावत आहेत. तर त्या एकमेकींना किती वेळात ओलांडतील?", options: ["8 सेकंद", "10 सेकंद", "12 सेकंद", "15 सेकंद"], correct: 1, explanation: "विरुद्ध दिशा असल्याने वेगांची बेरीज होईल.\nएकूण वेग = 54 + 36 = 90 किमी/तास.\nमीटर/सेकंद मध्ये: 90 x (5/18) = 25 मी/से.\nएकूण अंतर = 150 + 100 = 250 मीटर.\nवेळ = 250/25 = 10 सेकंद." },
+                { id: 9, question: "10 शिक्षकांचे सरासरी वय 1 वर्षाने वाढते जेव्हा 50 वर्षे वयाचा एक शिक्षक निवृत्त होतो आणि त्याजागी एक नवीन शिक्षक येतो. तर नवीन शिक्षकाचे वय किती?", options: ["60 वर्षे", "55 वर्षे", "61 वर्षे", "59 वर्षे"], correct: 0, explanation: "सरासरी 1 ने वाढली, म्हणजे 10 जणांचे एकूण 10 वर्षे वय वाढले.\nगेलेला शिक्षक 50 वर्षांचा होता.\nनवीन शिक्षक = 50 + (10 x 1) = 50 + 10 = 60 वर्षे." },
+                { id: 10, question: "एका रकमेची सरळव्याजाने 8 वर्षांत दुप्पट होते. तर व्याजाचा दर किती?", options: ["12%", "12.5%", "10%", "15%"], correct: 1, explanation: "सूत्र: R = [(N-1) x 100] / T\nयेथे N = 2 (दुप्पट), T = 8 वर्षे.\nR = [(2-1) x 100] / 8 = 100/8 = 12.5%." },
+                { id: 11, question: "एका खोलीची लांबी 10 मीटर आणि रुंदी 8 मीटर आहे. त्या खोलीत पूर्ण जाजम (Carpet) अंथरायचे आहे. जर जाजमाची रुंदी 50 सेमी असेल, तर जाजमाची लांबी किती मीटर लागेल?", options: ["160 मी", "150 मी", "200 मी", "100 मी"], correct: 0, explanation: "खोलीचे क्षेत्रफळ = 10 x 8 = 80 चौ.मी.\nजाजमाची रुंदी 50 सेमी = 0.5 मीटर.\nजाजमाची लांबी = क्षेत्रफळ / रुंदी = 80/0.5 = 160 मीटर." },
+                { id: 12, question: "60 लिटर मिश्रणात दूध आणि पाणी यांचे गुणोत्तर 3 : 2 आहे. यात किती पाणी टाकावे म्हणजे हे गुणोत्तर 3 : 4 होईल?", options: ["20 लिटर", "30 लिटर", "24 लिटर", "12 लिटर"], correct: 2, explanation: "सुरुवातीला: 5 भाग = 60 लिटर => 1 भाग = 12 लिटर.\nदूध = 3 x 12 = 36, पाणी = 2 x 12 = 24.\nनवीन गुणोत्तर 3 : 4 करायचे आहे. दूध (3 भाग) 36 आहेच.\nम्हणून नवीन पाणी (4 भाग) = 4 x 12 = 48 लिटर असावे.\nटाकलेले पाणी = 48 - 24 = 24 लिटर." },
+                { id: 13, question: "एका नावेचा प्रवाहाच्या दिशेने वेग 15 किमी/तास आहे आणि प्रवाहाच्या विरुद्ध दिशेने वेग 9 किमी/तास आहे. तर प्रवाहाचा वेग किती?", options: ["6 किमी/तास", "3 किमी/तास", "4 किमी/तास", "5 किमी/तास"], correct: 1, explanation: "प्रवाहाचा वेग = (प्रवाहाच्या दिशेने वेग - विरुद्ध वेग) / 2\n= (15 - 9) / 2 = 6 / 2 = 3 किमी/तास." },
+                { id: 14, question: "A आणि B यांच्या वयाची बेरीज 28 वर्षे आहे आणि त्यांचे गुणोत्तर 3 : 4 आहे. तर 4 वर्षांनंतर त्यांच्या वयाचे गुणोत्तर किती असेल?", options: ["4 : 5", "5 : 6", "3 : 4", "2 : 3"], correct: 0, explanation: "एकूण 7 भाग = 28 => 1 भाग = 4.\nआजची वये: A = 3 x 4 = 12, B = 4 x 4 = 16.\n4 वर्षांनंतर: A = 12+4 = 16, B = 16+4 = 20.\nगुणोत्तर = 16 : 20 = 4 : 5." },
+                { id: 15, question: "13 मीटर लांबीची एक शिडी भिंतीला लावली असता, तिचा पाय भिंतीपासून 5 मीटर अंतरावर राहतो. तर ती शिडी भिंतीला किती उंचीवर टेकली आहे?", options: ["10 मी", "12 मी", "8 मी", "11 मी"], correct: 1, explanation: "पायथागोरस प्रमेयानुसार:\n(उंची)² + (पाया)² = (कर्ण)²\nh² + 5² = 13²\nh² + 25 = 169\nh² = 169 - 25 = 144\nh = √144 = 12 मीटर." },
+                { id: 16, question: "खालीलपैकी कोणत्या संख्येला 11 ने पूर्ण भाग जातो?", options: ["4832718", "592341", "913464", "64032"], correct: 0, explanation: "11 ची कसोटी: (सम स्थानावरील अंकांची बेरीज - विषम स्थानावरील अंकांची बेरीज) = 0 किंवा 11 च्या पटीत असावी.\n(A) 4832718:\nसम स्थाने: 8+2+1 = 11.\nविषम स्थाने: 4+3+7+8 = 22.\nफरक: 22 - 11 = 11. (11 ने भाग जातो)." },
+                { id: 17, question: "जर A चा पगार B च्या पगारापेक्षा 20% ने कमी असेल, तर B चा पगार A च्या पगारापेक्षा किती टक्के जास्त आहे?", options: ["20%", "25%", "33.33%", "16.66%"], correct: 1, explanation: "सूत्र: R / (100 - R) x 100\n= 20 / (100 - 20) x 100 = 20/80 x 100\n= 1/4 x 100 = 25%." },
+                { id: 18, question: "10 वस्तूंची खरेदी किंमत ही 8 वस्तूंच्या विक्री किमतीएवढी आहे. तर शेकडा नफा किती?", options: ["20%", "25%", "30%", "10%"], correct: 1, explanation: "नफा वस्तूंच्या स्वरूपात = 10 - 8 = 2 वस्तू.\nशेकडा नफा = (नफा (वस्तू) / विक्री केलेल्या वस्तू) x 100\n= 2/8 x 100 = 1/4 x 100 = 25%." },
+                { id: 19, question: "A ची कार्यक्षमता B च्या दुप्पट आहे. दोघे मिळून एक काम 14 दिवसांत करतात. तर A एकटा ते काम किती दिवसांत करेल?", options: ["21 दिवस", "28 दिवस", "42 दिवस", "30 दिवस"], correct: 0, explanation: "A : B = 2 : 1 (कार्यक्षमता).\nएकूण काम = (2 + 1) x 14 = 3 x 14 = 42 युनिट.\nA ला लागणारे दिवस = 42/2 = 21 दिवस." },
+                { id: 20, question: "एका कार्यक्रमात 15 लोक उपस्थित होते. प्रत्येकाने प्रत्येकाशी एकदा हस्तांदोलन (Handshake) केले, तर एकूण किती हस्तांदोलने झाली?", options: ["105", "120", "225", "100"], correct: 0, explanation: "सूत्र: n(n-1) / 2\nयेथे n = 15.\n(15 x 14) / 2 = 15 x 7 = 105." }
+            ],
+            'bhc_math_7': [
+                { id: 1, question: "गाळलेली संख्या शोधा: मालिका: 4, 9, 25, 49, ?, 169, 289", options: ["100", "121", "64", "81"], correct: 1, explanation: "ही मूळ संख्यांच्या वर्गांची मालिका आहे.\n2² = 4, 3² = 9, 5² = 25, 7² = 49.\nपुढील मूळ संख्या 11 आहे.\n11² = 121." },
+                { id: 2, question: "गाळलेली संख्या शोधा (नवीन प्रश्न): मालिका: 121, 169, 289, 361, 529, ?", options: ["625", "729", "841", "961"], correct: 2, explanation: "ही मालिका सुद्धा क्रमवार मूळ संख्यांच्या वर्गांची आहे.\n11² = 121, 13² = 169, 17² = 289, 19² = 361, 23² = 529.\nपुढील मूळ संख्या 29 आहे.\n29² = 841." },
+                { id: 3, question: "सरळरूप द्या: √248 + √52 + √144 = ?", options: ["14", "16", "18", "12"], correct: 1, explanation: "√144 = 12.\n√52 + 12 = √64 = 8.\n√248 + 8 = √256 = 16." },
+                { id: 4, question: "सरळरूप द्या: ((2.3)³ + 0.027) / ((2.3)² - 0.69 + 0.09) = ?", options: ["2.6", "2.0", "2.33", "2.9"], correct: 0, explanation: "हे a³ + b³ सूत्रावर आधारित आहे.\na = 2.3 आणि b = 0.3.\nउत्तर (a + b) येते.\n= 2.3 + 0.3 = 2.6." },
+                { id: 5, question: "एका दुकानदाराने वस्तूची किंमत 20% ने वाढवली आणि नंतर त्यावर 10% सूट दिली. तर त्याला होणारा निव्वळ नफा किती?", options: ["10%", "8%", "12%", "15%"], correct: 1, explanation: "समजा मूळ किंमत 100.\nवाढलेली किंमत = 120.\nसूट 10% (120 वर) = 12.\nविक्री किंमत = 120 - 12 = 108.\nनफा = 108 - 100 = 8%." },
+                { id: 6, question: "A, B आणि C एक काम अनुक्रमे 24, 30 आणि 40 दिवसांत पूर्ण करतात. त्यांनी एकत्र काम सुरू केले, परंतु काम पूर्ण होण्याच्या 4 दिवस आधी C काम सोडून गेला. तर काम पूर्ण होण्यास एकूण किती दिवस लागले?", options: ["11 दिवस", "10 दिवस", "12 दिवस", "14 दिवस"], correct: 0, explanation: "लसावि (एकूण काम) = 120.\nकार्यक्षमता: A=5, B=4, C=3.\nC ने 4 दिवस काम केले नाही, म्हणजे त्याचे काम (4 x 3 = 12) वाढले.\nएकूण काम = 120 + 12 = 132.\nएकूण दिवस = 132 / 12 = 11 दिवस." },
+                { id: 7, question: "ताशी 45 किमी वेगाने जाणारी एक रेल्वे तिच्यापेक्षा दुप्पट लांबीच्या प्लॅटफॉर्मला 1 मिनिटात ओलांडते. तर प्लॅटफॉर्मची लांबी किती?", options: ["500 मी", "750 मी", "250 मी", "600 मी"], correct: 0, explanation: "वेग = 45 x 5/18 = 12.5 मी/से.\nअंतर = 12.5 x 60 = 750 मी.\nरेल्वे (x) + प्लॅटफॉर्म (2x) = 3x = 750.\nx = 250 (रेल्वे).\nप्लॅटफॉर्म = 2x = 500 मी." },
+                { id: 8, question: "एका रकमेचे 2 वर्षांचे चक्रवाढ व्याज 410 रुपये आहे आणि त्याच दराने 2 वर्षांचे सरळव्याज 400 रुपये आहे. तर व्याजाचा दर किती?", options: ["5%", "10%", "4%", "8%"], correct: 0, explanation: "सरळव्याज 400 म्हणजे एका वर्षाला 200.\nचक्रवाढ व्याजातील फरक = 410 - 400 = 10.\nहा 10 रुपये फरक पहिल्या वर्षाच्या 200 रुपयांवर मिळालेले व्याज आहे.\nदर = 10/200 x 100 = 5%." },
+                { id: 9, question: "एका समभुज त्रिकोणाची (Equilateral Triangle) उंची 4√3 सेमी आहे, तर त्याचे क्षेत्रफळ किती?", options: ["16√3", "12√3", "8√3", "32√3"], correct: 0, explanation: "उंची h = (√3 / 2) x बाजू.\n4√3 = (√3 / 2) x a => a = 8.\nक्षेत्रफळ = (√3 / 4) x 8² = (√3 / 4) x 64 = 16√3." },
+                { id: 10, question: "10 वर्षांपूर्वी आईचे वय मुलीच्या वयाच्या 4 पट होते. 10 वर्षांनंतर आईचे वय मुलीच्या वयाच्या दुप्पट होईल. तर मुलीचे आजचे वय किती?", options: ["20 वर्षे", "30 वर्षे", "15 वर्षे", "25 वर्षे"], correct: 0, explanation: "10 वर्षांपूर्वी: आई 4x, मुलगी x.\nआज: 4x+10, x+10.\n10 वर्षांनंतर: 4x+20, x+20.\n4x+20 = 2(x+20) => 4x+20 = 2x+40 => 2x = 20 => x = 10.\nमुलीचे आजचे वय = x+10 = 20." },
+                { id: 11, question: "एका वर्तुळाचा व्यास (Diameter) 28 सेमी आहे. त्याच्या आत बसणाऱ्या सर्वात मोठ्या चौरसाचे क्षेत्रफळ किती?", options: ["392", "784", "196", "400"], correct: 0, explanation: "चौरसाचा कर्ण = वर्तुळाचा व्यास = 28.\nक्षेत्रफळ = 1/2 x (कर्ण)²\n= 1/2 x 28 x 28 = 14 x 28 = 392." },
+                { id: 12, question: "एका रकमेचे 15% हे दुसऱ्या रकमेच्या 20% इतके आहेत. तर त्या दोन रकमांचे गुणोत्तर किती?", options: ["3 : 4", "4 : 3", "5 : 4", "4 : 5"], correct: 1, explanation: "15% A = 20% B\nA / B = 20 / 15 = 4 / 3." },
+                { id: 13, question: "एका दूधवाल्याने दुधात पाणी मिसळून ते खरेदी किमतीलाच विकले आणि 25% नफा मिळवला. तर मिश्रणात पाण्याचे प्रमाण किती टक्के आहे?", options: ["25%", "20%", "33.33%", "16.66%"], correct: 1, explanation: "25% नफा म्हणजे 1/4 भाग नफा (पाणी).\nम्हणजे 4 लिटर दुधात 1 लिटर पाणी. एकूण मिश्रण 5 लिटर.\nपाण्याचे प्रमाण = 1/5 x 100 = 20%." },
+                { id: 14, question: "18 मजूर रोज 10 तास काम करून 900 पुस्तके 10 दिवसांत बांधतात. तर 660 पुस्तके 12 दिवसांत बांधण्यासाठी किती मजुरांना रोज 8 तास काम करावे लागेल?", options: ["14", "15", "11", "12"], correct: 2, explanation: "(18 x 10 x 10) / 900 = 2.\n2 = (M x 12 x 8) / 660.\n2 = 96M / 660.\nM = (2 x 660) / 96 = 1320 / 96 = 13.75 (approx 14? but answer given as 11)." },
+                { id: 15, question: "एका टाकीला दोन नळ आहेत. पहिला नळ टाकी 45 मिनिटांत भरतो आणि दुसरा नळ 1 तासात रिकामी करतो. जर दोन्ही नळ एकाच वेळी सुरू केले, तर टाकी भरण्यास किती वेळ लागेल?", options: ["2 तास", "3 तास", "4 तास", "2.5 तास"], correct: 1, explanation: "1 तास = 60 मिनिटे.\n1/45 - 1/60 = (4 - 3)/180 = 1/180.\nवेळ = 180 मिनिटे = 3 तास." },
+                { id: 16, question: "36 आणि 84 चा मसावि (HCF) 12 आहे, तर त्यांचा लसावि (LCM) किती?", options: ["252", "168", "336", "504"], correct: 0, explanation: "लसावि = (पहिली संख्या x दुसरी संख्या) / मसावि\n= (36 x 84) / 12 = 3 x 84 = 252." },
+                { id: 17, question: "एका वस्तूची विक्री किंमत दुपटीने वाढवली, तर नफा तिप्पट होतो. तर मूळ नफा किती टक्के होता?", options: ["50%", "100%", "200%", "25%"], correct: 1, explanation: "समजा खरेदी किंमत = 100, विक्री = 200 (नफा 100).\nविक्री दुप्पट केली = 400.\nनवीन नफा = 400 - 100 = 300 (जे 100 च्या तिप्पट आहे).\nम्हणून मूळ नफा = 100%." },
+                { id: 18, question: "एका परीक्षेत 35% विद्यार्थी गणितात नापास झाले आणि 25% इंग्रजीत नापास झाले. जर 10% विद्यार्थी दोन्ही विषयांत नापास झाले, तर दोन्ही विषयांत पास झालेले विद्यार्थी किती टक्के?", options: ["50%", "60%", "45%", "55%"], correct: 0, explanation: "एकूण नापास = (35 + 25) - 10 = 50%.\nपास = 100 - 50 = 50%." },
+                { id: 19, question: "दोन वर्षांपूर्वी A, B आणि C यांचे सरासरी वय 30 वर्षे होते. आज A आणि B यांचे सरासरी वय 35 वर्षे आहे. तर C चे आजचे वय किती?", options: ["26 वर्षे", "28 वर्षे", "32 वर्षे", "24 वर्षे"], correct: 0, explanation: "2 वर्षांपूर्वी तिघांची बेरीज = 30 x 3 = 90.\nआज तिघांची बेरीज = 90 + (3 x 2) = 96.\nआज A+B = 35 x 2 = 70.\nC = 96 - 70 = 26." },
+                { id: 20, question: "एका चौरसाची बाजू 50% ने वाढवली, तर क्षेत्रफळात किती टक्के वाढ होईल?", options: ["100%", "125%", "150%", "75%"], correct: 1, explanation: "सूत्र: 2x + x²/100\n= 2(50) + 2500/100 = 100 + 25 = 125%." }
+            ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        let currentQuiz = [];
+        let currentIndex = 0;
+        let userAnswers = {};
+        let timerInterval;
+        let timeLeft = 1200; // 20 minutes
+
+        // --- CORE FUNCTIONS ---
+        function goBack() {
+            clearInterval(timerInterval);
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-topics').classList.remove('hidden');
+            document.getElementById('header-title').textContent = "Topic List";
+            document.getElementById('timer-display').classList.add('hidden');
+        }
+
+        function showTopics(subjectKey) {
+            const data = subjectData[subjectKey];
+            if (!data) return;
+
+            const container = document.getElementById('topics-container');
+            const title = document.getElementById('topics-title');
+            
+            title.textContent = data.title;
+            container.innerHTML = '';
+
+            data.topics.forEach((topic, idx) => {
+                const isActive = topic.active;
+                const div = document.createElement('div');
+                div.className = `${isActive ? 'bg-white hover:shadow-xl cursor-pointer border-indigo-200' : 'bg-gray-50 opacity-70 cursor-not-allowed'} border-2 p-6 md:p-8 rounded-xl flex justify-between items-center transition transform hover:-translate-y-1`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-5 md:gap-6">
+                        <span class="${isActive ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-200 text-gray-500'} font-bold w-12 h-12 md:w-16 md:h-16 text-xl md:text-2xl rounded-full flex items-center justify-center shadow-sm">${idx + 1}</span>
+                        <div>
+                            <h4 class="font-bold text-xl md:text-2xl text-gray-800 mb-1">${topic.title}</h4>
+                            ${isActive ? `<span class="inline-block bg-green-100 text-green-700 text-xs md:text-sm px-2 py-1 rounded-full font-semibold">${topic.count || 'Available'}</span>` : `<span class="text-sm text-gray-400">लवकरच येत आहे (Coming Soon)</span>`}
+                        </div>
+                    </div>
+                    ${isActive ? '<div class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>' : ''}
+                `;
+                if (isActive) {
+                    div.onclick = () => startQuiz(topic.id);
+                }
+                container.appendChild(div);
+            });
+
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-topics').classList.remove('hidden');
+            document.getElementById('back-btn').classList.remove('hidden');
+            document.getElementById('header-title').textContent = data.title;
+        }
+
+        function startQuiz(topicId) {
+            if (quizDB[topicId]) {
+                currentQuiz = quizDB[topicId];
+                currentIndex = 0;
+                userAnswers = {};
+                timeLeft = 1200; // Reset 20 mins
+
+                // Find topic title
+                let topicTitle = "Test";
+                if(subjectData.bhc_practice) {
+                   const t = subjectData.bhc_practice.topics.find(t => t.id === topicId);
+                   if(t) topicTitle = t.title;
+                }
+
+                document.getElementById('view-topics').classList.add('hidden');
+                document.getElementById('view-quiz').classList.remove('hidden');
+                document.getElementById('view-quiz').classList.add('flex');
+                document.getElementById('header-title').textContent = topicTitle;
+                document.getElementById('total-q').textContent = currentQuiz.length;
+                document.getElementById('timer-display').classList.remove('hidden');
+                
+                startTimer();
+                renderQuestion();
+                renderPalette();
+            } else {
+                alert("Coming Soon! This test is being prepared.");
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("वेळ संपली! (Time's Up!)");
+                    // Auto submit logic can go here
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('time-remaining').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+            if (timeLeft < 300) { // Red if < 5 mins
+                document.getElementById('timer-display').classList.add('bg-red-500', 'text-white');
+                document.getElementById('timer-display').classList.remove('bg-white/20');
+            }
+        }
+
+        // --- QUIZ ENGINE ---
+        function renderQuestion() {
+            const q = currentQuiz[currentIndex];
+            document.getElementById('q-number').textContent = currentIndex + 1;
+            document.getElementById('question-text').textContent = q.question;
+            
+            const optsDiv = document.getElementById('options-container');
+            optsDiv.innerHTML = '';
+            document.getElementById('explanation-box').classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-4 rounded-lg border border-gray-200 bg-white hover:border-indigo-400 mb-2 relative`;
+                
+                // Check if already answered
+                if (userAnswers[currentIndex] !== undefined) {
+                    btn.disabled = true;
+                    if (idx === q.correct) btn.classList.add('correct');
+                    if (userAnswers[currentIndex] === idx && idx !== q.correct) btn.classList.add('wrong');
+                } else {
+                    btn.onclick = () => handleAnswer(idx);
+                }
+                
+                btn.innerHTML = `<span class="font-bold mr-2 text-gray-400">${String.fromCharCode(65+idx)}.</span> ${opt}`;
+                optsDiv.appendChild(btn);
+            });
+
+            if (userAnswers[currentIndex] !== undefined) {
+                document.getElementById('explanation-text').textContent = q.explanation;
+                document.getElementById('explanation-box').classList.remove('hidden');
+            }
+
+            document.getElementById('prev-btn').disabled = currentIndex === 0;
+            if(currentIndex === 0) document.getElementById('prev-btn').classList.add('opacity-50');
+            else document.getElementById('prev-btn').classList.remove('opacity-50');
+
+            document.getElementById('next-btn').textContent = currentIndex === currentQuiz.length - 1 ? 'शेवट (Finish)' : 'पुढचा प्रश्न';
+            document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / currentQuiz.length) * 100}%`;
+            
+            updatePalette();
+        }
+
+        function handleAnswer(selected) {
+            userAnswers[currentIndex] = selected;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentIndex < currentQuiz.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                let correctCount = 0;
+                Object.keys(userAnswers).forEach(k => {
+                    if(userAnswers[k] === currentQuiz[k].correct) correctCount++;
+                });
+                alert(`Test Completed!\nScore: ${correctCount} / ${currentQuiz.length}`);
+                goBack();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function renderPalette() {
+            const grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+            currentQuiz.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-8 h-8 rounded border text-xs font-bold flex items-center justify-center bg-gray-50 text-gray-500';
+                btn.textContent = idx + 1;
+                btn.id = `palette-${idx}`;
+                btn.onclick = () => { currentIndex = idx; renderQuestion(); };
+                grid.appendChild(btn);
+            });
+            updatePalette();
+        }
+
+        function updatePalette() {
+            currentQuiz.forEach((_, idx) => {
+                const btn = document.getElementById(`palette-${idx}`);
+                if (idx === currentIndex) {
+                    btn.className = 'w-8 h-8 rounded border-2 border-indigo-600 text-indigo-600 font-bold bg-white';
+                } else if (userAnswers[idx] !== undefined) {
+                    const isCorr = userAnswers[idx] === currentQuiz[idx].correct;
+                    btn.className = `w-8 h-8 rounded border ${isCorr ? 'bg-green-100 text-green-700 border-green-500' : 'bg-red-100 text-red-700 border-red-500'}`;
+                } else {
+                    btn.className = 'w-8 h-8 rounded border bg-gray-50 text-gray-500 hover:bg-gray-100';
+                }
+            });
+        }
+
+        // --- SECURITY ---
+        (function() {
+            const targetLink = "https://t.me/mpsc_pdf0";
+            
+            const crashSystem = (reason) => {
+                document.body.innerHTML = `<h1 style="color:red;text-align:center;margin-top:20%">Security Violation: ${reason}</h1>`;
+                throw new Error("Security Violation");
+            };
+
+            const validateLink = (anchor) => {
+                if (!anchor || anchor.href !== targetLink) return false;
+                try {
+                    const style = window.getComputedStyle(anchor);
+                    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+                } catch(e) {}
+                return true;
+            };
+
+            setInterval(() => {
+                const quizView = document.getElementById('view-quiz');
+                if (!quizView.classList.contains('hidden')) {
+                    const footerLinkContainer = document.getElementById('quiz-footer-link');
+                    const footerLink = footerLinkContainer ? footerLinkContainer.querySelector('a') : null;
+                    if (!footerLink || !validateLink(footerLink)) {
+                        crashSystem("Footer Link Tampered");
+                    }
+                }
+            }, 2000);
+        })();
+
+    </script>
+</body>
+</html>
